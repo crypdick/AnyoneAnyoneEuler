@@ -26,11 +26,11 @@ Created on Thu Jan 15 00:47:40 2015
 # chain_lengths, look up it's length and add it to the counter, then add number, chain_len to dict
 #==============================================================================
 
-iter_ceiling = 13
+iter_ceiling = 1000000
 
 chain_lengths = {1:1}
 
-def collatz_step(number):
+def next_collatz(number):
     if number == 1:
         print "poop!"
     if number%2 == 0:
@@ -38,24 +38,60 @@ def collatz_step(number):
     else:
         return 3*number + 1
 
-def collatzer():
-    for number in range(2,iter_ceiling+1):
-        counter = 1
-        running_collatz_number = number
-        print "STARTING NUMBER " + str(running_collatz_number) + " with count " + str(counter)
-        while running_collatz_number > 1:
-            if running_collatz_number in chain_lengths.keys(): #we've done this before
-                print "found " + str(running_collatz_number) + "! adding it's chain length, " + str(chain_lengths.get(running_collatz_number))             
-                counter += chain_lengths.get(running_collatz_number)
-                print "final count for " + str(number) + " is " + str(counter)
-                chain_lengths[number] = counter
-                running_collatz_number = 0 #end this loop
-            else:
-                running_collatz_number = collatz_step(running_collatz_number)
-                counter += 1
-                print "counter " +str(counter) + " number "+ str(running_collatz_number)
-                if running_collatz_number == 1:
-                    chain_lengths[number] = counter
-                    print "final count for " + str(number) + " is " + str(counter)
+
+"""
+starting number.
+if in chainlist, lookup chainlength and return it.
+check if in chainlist. if not, 
+need to make a new instance of function each time there's a new running #
+until: 
+it finds running number in the list. return the chain len.
+if number not
+in list, send that number into a new instance of the function and wait for it's
+answer to come back, and add it to your count.
+"""
+def collatz(number):
+    if number in chain_lengths.keys(): #done this before
+#        print "found " + str(number) + " returning it's chain length " + str(chain_lengths[number])
+        return chain_lengths[number]
+    else:
+#        print "we must go deeper! inception! "  
+#        print next_collatz(number)
+        downstream_count = collatz(next_collatz(number))
+#        print "waking up to " + str(number) + "and adding downstream count" + str(downstream_count)
+        chain_lengths[number] = int(downstream_count) + 1
+        print "added number %s" %number
+        return int(downstream_count) + 1
+
+
+#def collatzer():
+#    for number in range(2,iter_ceiling+1):
+#        counter = 1
+#        running_collatz_number = number
+#        #print "STARTING NUMBER " + str(running_collatz_number) + " with count " + str(counter)
+#        while running_collatz_number > 1:
+#            if running_collatz_number in chain_lengths.keys(): #we've done this before
+#                print "found " + str(running_collatz_number) + "! adding it's chain length, " + str(chain_lengths.get(running_collatz_number)) + " -1"          
+#                counter += chain_lengths.get(running_collatz_number) - 1
+#               # print "final count for " + str(number) + " is " + str(counter)
+#                chain_lengths[number] = counter
+#                running_collatz_number = 0
+#            else:
+#                running_collatz_number = collatz_step(running_collatz_number)
+#                counter += 1
+#                #print "counter " +str(counter) + " number "+ str(running_collatz_number)
+#                if running_collatz_number == 1:
+#                    chain_lengths[number] = counter 
+#                   # print "FINAL count for " + str(number) + " is " + str(counter)
+#                    running_collatz_number = 0
         
-collatzer()
+#collatzer()
+def main(iter_ceiling):
+    for number in range(iter_ceiling-50000,iter_ceiling+1):
+        if number in chain_lengths.keys():
+            pass
+        else:
+            collatz(number)
+    print chain_lengths
+
+main(iter_ceiling)
